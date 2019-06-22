@@ -1,21 +1,18 @@
 class Game
   def initialize(slovo)
     @letters = get_letters(slovo)
-
     @errors = 0
-
     @good_letters = []
     @bad_letters = []
-
     @status = 0
   end
 
   def get_letters(slovo)
-    return slovo.downcase.split("")
+    slovo.downcase.split("")
   end
 
   def status
-    return @status
+    @status
   end
 
   def next_step(bukva)
@@ -41,7 +38,6 @@ class Game
 
     if @letters.include?(bukva) || @letters.include?(second_letter)
       @good_letters << bukva
-
       if second_letter != ""
         @good_letters << second_letter
       end
@@ -49,11 +45,8 @@ class Game
       if (@letters - @good_letters).empty?
         @status = 1
       end
-
     else
-
       @bad_letters << bukva
-
       if second_letter != ""
         @bad_letters << second_letter
       end

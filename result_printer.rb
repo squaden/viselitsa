@@ -21,10 +21,6 @@ class ResultPrinter
     end
   end
 
-  def print_viselitsa(errors)
-    puts @status_image[errors]
-  end
-
   def print_status(game)
     cls
     puts "\nСлово: #{get_word_for_print(game.letters, game.good_letters)}"
@@ -38,7 +34,9 @@ class ResultPrinter
       puts "Загаданно было слово: " + game.letters.join("")
       puts
     elsif game.status == 1
+      puts
       puts "Поздравляем, вы выиграли!\n\n"
+      puts
     else
       puts "У вас осталось ошибок: " + (7 - game.errors).to_s
     end
@@ -55,7 +53,7 @@ class ResultPrinter
       end
     end
 
-    return result
+    result
   end
 
   def print_viselitsa(errors)

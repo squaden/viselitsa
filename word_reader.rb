@@ -1,7 +1,7 @@
 class WordReader
 
   def read_from_args
-    return ARGV[0]
+    ARGV[0]
   end
 
   def read_from_file(file_name)
@@ -13,6 +13,6 @@ class WordReader
     lines = file.readlines
     file.close
 
-    return lines.sample.chomp
+    lines.sample.chomp
   end
 end
