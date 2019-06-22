@@ -1,5 +1,4 @@
 class WordReader
-
   def read_from_args
     ARGV[0]
   end
