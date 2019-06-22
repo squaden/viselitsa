@@ -1,5 +1,4 @@
 class ResultPrinter
-
   def initialize
     @status_image = []
 
