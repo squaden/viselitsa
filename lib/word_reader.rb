@@ -4,13 +4,9 @@ class WordReader
   end
 
   def read_from_file(file_name)
-    if !File.exist?(file_name)
-      return nil
-    end
+    return unless File.exist?(file_name)
 
-    file = File.new(file_name)
-    lines = file.readlines
-    file.close
+    lines = File.readlines(file_name, encoding: 'UTF-8')
 
     lines.sample.chomp
   end

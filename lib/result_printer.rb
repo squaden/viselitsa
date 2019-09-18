@@ -1,15 +1,15 @@
 class ResultPrinter
-  def initialize
+  def initialize(game)
     @status_image = []
 
     current_path = File.dirname(__FILE__)
     counter = 0
 
-    while counter <= 7 do
-      file_name = current_path + "/image/#{counter}.txt"
+    while counter <= game.max_errors
+      file_name = current_path + "/../image/#{counter}.txt"
 
       if File.exist?(file_name)
-        file = File.new(file_name)
+        file = File.new(file_name, 'r:UTF-8')
         @status_image << file.read
         file.close
       else
@@ -20,46 +20,46 @@ class ResultPrinter
     end
   end
 
+  def print_viselitsa(errors)
+    puts @status_image[errors]
+  end
+
   def print_status(game)
     cls
+    puts game.version
+
     puts "\nСлово: #{get_word_for_print(game.letters, game.good_letters)}"
 
-    puts "Ошибки: #{game.bad_letters.join(", ").to_s}"
+    puts "\nОшибки: #{game.bad_letters.join(', ')}"
 
     print_viselitsa(game.errors)
 
-    if game.status == -1
+    if game.lost?
       puts "\nВы проиграли :(\n"
-      puts "Загаданно было слово: " + game.letters.join("")
+      puts 'Загаданное слово было: ' + game.letters.join('')
       puts
-    elsif game.status == 1
-      puts
+    elsif game.won?
       puts "Поздравляем, вы выиграли!\n\n"
-      puts
     else
-      puts "У вас осталось ошибок: " + (7 - game.errors).to_s
+      puts "У вас осталось ошибок: #{game.errors_left}"
     end
   end
 
   def get_word_for_print(letters, good_letters)
-    result = ""
+    result = ''
 
-    for item in letters do
-      if good_letters.include?(item)
-        result += item + " "
-      else
-        result += "__ "
-      end
+    letters.each do |letter|
+      result += if good_letters.include?(letter)
+                  letter + ' '
+                else
+                  '__ '
+                end
     end
 
     result
   end
 
-  def print_viselitsa(errors)
-    puts @status_image[errors]
-  end
-
   def cls
-    system "clear" or system "cls"
+    system('clear') && system('cls')
   end
 end

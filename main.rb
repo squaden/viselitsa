@@ -1,18 +1,21 @@
-require_relative "lib/game"
-require_relative "lib/result_printer"
-require_relative "lib/word_reader"
+require 'unicode_utils/upcase'
 
-puts "Игра виселица.\n\n"
+require_relative 'lib/game'
+require_relative 'lib/result_printer'
+require_relative 'lib/word_reader'
 
-printer = ResultPrinter.new
+VERSION = 'Игра виселица, версия 5. (c) Хороший программист'
+
 reader = WordReader.new
-
 current_path = File.dirname(__FILE__)
 slovo = reader.read_from_file(current_path + "/data/words.txt")
 
 game = Game.new(slovo)
+game.version = VERSION
 
-while game.status == 0 do
+printer = ResultPrinter.new(game)
+
+while game.in_progress?
   printer.print_status(game)
   game.ask_next_letter
 end

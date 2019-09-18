@@ -1,87 +1,95 @@
 class Game
+  attr_reader :errors, :letters, :good_letters, :bad_letters, :status
+  attr_accessor :version
+
+  MAX_ERRORS = 7
+
   def initialize(slovo)
     @letters = get_letters(slovo)
     @errors = 0
     @good_letters = []
     @bad_letters = []
-    @status = 0
+    @status = :in_progress
   end
 
   def get_letters(slovo)
-    slovo.downcase.split("")
-  end
-
-  def status
-    @status
-  end
-
-  def next_step(bukva)
-    if @status == -1 || @status == 1
-      return
-    end
-
-    if @good_letters.include?(bukva) || @bad_letters.include?(bukva)
-      return
-    end
-
-    second_letter = ""
-    case bukva
-    when "е"
-      second_letter = "ё"
-    when "ё"
-      second_letter = "е"
-    when "и"
-      second_letter = "й"
-    when "й"
-      second_letter = "и"
-    end
-
-    if @letters.include?(bukva) || @letters.include?(second_letter)
-      @good_letters << bukva
-      if second_letter != ""
-        @good_letters << second_letter
-      end
-
-      if (@letters - @good_letters).empty?
-        @status = 1
-      end
+    if slovo.nil? || slovo == ''
+      abort 'Задано пустое слово, не о чем играть. Закрываемся.'
     else
-      @bad_letters << bukva
-      if second_letter != ""
-        @bad_letters << second_letter
-      end
+      slovo = slovo.encode('UTF-8')
+    end
 
+    UnicodeUtils.upcase(slovo).split('')
+  end
+
+  def max_errors
+    MAX_ERRORS
+  end
+
+  def errors_left
+    MAX_ERRORS - @errors
+  end
+
+  def good?(letter)
+    @letters.include?(letter) ||
+      (letter == 'Е' && @letters.include?('Ё')) ||
+      (letter == 'Ё' && @letters.include?('Е')) ||
+      (letter == 'И' && @letters.include?('Й')) ||
+      (letter == 'Й' && @letters.include?('И'))
+  end
+
+  def add_letter_to(letters, letter)
+    letters << letter
+    case letter
+    when 'И' then letters << 'Й'
+    when 'Й' then letters << 'И'
+    when 'Е' then letters << 'Ё'
+    when 'Ё' then letters << 'Е'
+    end
+  end
+
+  def solved?
+    (@letters - @good_letters).empty?
+  end
+
+  def repeated?(letter)
+    @good_letters.include?(letter) || @bad_letters.include?(letter)
+  end
+
+  def lost?
+    @status == :lost || @errors >= MAX_ERRORS
+  end
+
+  def in_progress?
+    @status == :in_progress
+  end
+
+  def won?
+    @status == :won
+  end
+
+  def next_step(letter)
+    letter = UnicodeUtils.upcase(letter)
+
+    return if @status == :lost || @status == :won
+    return if repeated?(letter)
+
+    if good?(letter)
+      add_letter_to(@good_letters, letter)
+      @status = :won if solved?
+    else
+      add_letter_to(@bad_letters, letter)
       @errors += 1
-
-      if @errors >= 7
-        @status = -1
-      end
+      @status = :lost if lost?
     end
   end
 
   def ask_next_letter
     puts "\nВведите следующую букву"
-    letter = ""
-    while letter == "" do
-      letter = STDIN.gets.chomp
-    end
+    letter = ''
 
-    next_step(letter.downcase)
-  end
+    letter = STDIN.gets.encode('UTF-8').chomp while letter == ''
 
-  def errors
-    @errors
-  end
-
-  def letters
-    @letters
-  end
-
-  def good_letters
-    @good_letters
-  end
-
-  def bad_letters
-    @bad_letters
+    next_step(letter)
   end
 end
